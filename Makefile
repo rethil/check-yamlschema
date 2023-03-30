@@ -4,7 +4,7 @@ PYTHON := $(VENV)/bin/python
 
 $(PYTHON):
 	virtualenv $(VENV) --python python3.7
-	$(PYTHON) -m pip install --upgrade pip build
+	$(PYTHON) -m pip install --upgrade pip build twine
 
 requirements.txt: install
 	$(PYTHON) -m pip freeze > requirements.txt
@@ -30,6 +30,7 @@ clean:
 
 .PHONY: publish
 publish: install build
+	git checkout origin/main
 	git pull origin main
 	git tag -m "v$(VERSION)" v$(VERSION)
 	git push --tags
