@@ -1,4 +1,5 @@
 import argparse
+import logging
 import re
 
 import jsonschema
@@ -44,19 +45,29 @@ def download_schema(schema_url):
 def validate_document(document, schema_url):
     schema = download_schema(schema_url)
     jsonschema.validate(instance=document, schema=schema)
-    print(f"Document validated according to {schema_url}")
 
 
 def main():
+    logging.basicConfig(format='%(message)s')
     parser = argparse.ArgumentParser(
         description="Validate YAML document(s) against JSON schema."
     )
-    parser.add_argument("file", type=str, help="Path to YAML file to validate")
+    parser.add_argument("files", nargs="+", help="Path to YAML files to validate")
+    parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
-    yaml_documents = load_yaml_documents(args.file)
-    for doc in yaml_documents:
-        if doc["schema_url"] is not None:
-            validate_document(doc["content"], doc["schema_url"])
+
+    if args.verbose:
+        logging.getLogger().setLevel(logging.INFO)
+
+    for file in args.files:
+        yaml_documents = load_yaml_documents(file)
+        logging.info("File %s: %s documents", file, len(yaml_documents))
+        for index, doc in enumerate(yaml_documents):
+          if doc["schema_url"] is not None:
+              validate_document(doc["content"], doc["schema_url"])
+              logging.info("- Document %s validated according to %s", index, doc["schema_url"])
+          else:
+              logging.info("- Document %s has no JSON schema defined in comments", index)
 
 
 if __name__ == "__main__":
