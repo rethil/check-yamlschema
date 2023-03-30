@@ -48,7 +48,9 @@ def validate_document(document, schema_url):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate YAML document(s) against JSON schema.")
+    parser = argparse.ArgumentParser(
+        description="Validate YAML document(s) against JSON schema."
+    )
     parser.add_argument("file", type=str, help="Path to YAML file to validate")
     args = parser.parse_args()
     yaml_documents = load_yaml_documents(args.file)
