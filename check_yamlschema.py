@@ -48,7 +48,7 @@ def validate_document(document, schema_url):
 
 
 def main():
-    logging.basicConfig(format='%(message)s')
+    logging.basicConfig(format="%(message)s")
     parser = argparse.ArgumentParser(
         description="Validate YAML document(s) against JSON schema."
     )
@@ -63,11 +63,15 @@ def main():
         yaml_documents = load_yaml_documents(file)
         logging.info("File %s: %s documents", file, len(yaml_documents))
         for index, doc in enumerate(yaml_documents):
-          if doc["schema_url"] is not None:
-              validate_document(doc["content"], doc["schema_url"])
-              logging.info("- Document %s validated according to %s", index, doc["schema_url"])
-          else:
-              logging.info("- Document %s has no JSON schema defined in comments", index)
+            if doc["schema_url"] is not None:
+                validate_document(doc["content"], doc["schema_url"])
+                logging.info(
+                    "- Document %s validated according to %s", index, doc["schema_url"]
+                )
+            else:
+                logging.info(
+                    "- Document %s has no JSON schema defined in comments", index
+                )
 
 
 if __name__ == "__main__":
