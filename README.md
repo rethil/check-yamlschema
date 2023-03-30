@@ -1,2 +1,3 @@
 # check-yamlschema
-A CLI and pre-commit hooks for jsonschema validation in YAML files with multiple documents
+
+A CLI and pre-commit hook for jsonschema validation in YAML files with multiple documents
