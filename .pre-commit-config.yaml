@@ -1,4 +1,4 @@
-# .pre-commit-config.yaml
+# yaml-language-server: $schema=https://json.schemastore.org/pre-commit-config.json
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -6,6 +6,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        args: [--allow-multiple-documents]
       - id: check-ast
       - id: debug-statements
   - repo: https://github.com/asottile/pyupgrade
