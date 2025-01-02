@@ -12,6 +12,7 @@ import yaml
 def is_remote_schema(schema_url):
     return schema_url.startswith("http://") or schema_url.startswith("https://")
 
+
 def get_absolute_path(file, schema_path):
     if not schema_path or is_remote_schema(schema_path):
         return schema_path
@@ -21,13 +22,16 @@ def get_absolute_path(file, schema_path):
     abs_path = os.path.abspath(schema_path)
     return abs_path
 
+
 def get_validator(with_k8s_extension):
     basic_validator = jsonschema.validators.Draft202012Validator
 
     if not with_k8s_extension:
         return basic_validator
 
-    basic_additional_props_validator = basic_validator.VALIDATORS["additionalProperties"]
+    basic_additional_props_validator = basic_validator.VALIDATORS[
+        "additionalProperties"
+    ]
 
     def additional_props_hook(validator, value, instance, schema):
         if "x-kubernetes-preserve-unknown-fields" in schema:
@@ -38,11 +42,12 @@ def get_validator(with_k8s_extension):
 
         return basic_additional_props_validator(validator, value, instance, schema)
 
-    custom_validator = jsonschema.validators.extend(basic_validator, validators={
-        "additionalProperties" : additional_props_hook
-    })
+    custom_validator = jsonschema.validators.extend(
+        basic_validator, validators={"additionalProperties": additional_props_hook}
+    )
 
     return custom_validator
+
 
 def load_yaml_documents(file_path):
     with open(file_path) as file:
@@ -79,6 +84,7 @@ def download_schema(schema_url):
     response.raise_for_status()
     return response.json()
 
+
 def validate_document(file, document, schema_url, validator):
     if is_remote_schema(schema_url):
         schema = download_schema(schema_url)
@@ -113,13 +119,16 @@ def main():
         for index, doc in enumerate(yaml_documents):
             if doc["schema_url"] is not None:
                 try:
-                    validate_document(file, doc["content"], doc["schema_url"], validator)
+                    validate_document(
+                        file, doc["content"], doc["schema_url"], validator
+                    )
                     logging.debug(
                         f"{file} document {index}: validated according to {doc["schema_url"]}"
                     )
                 except jsonschema.exceptions.ValidationError as exception:
                     logging.error(
-                        f"{file} document {index}: validation failed according to {doc["schema_url"]}:\n  {exception.message}"
+                        f"{file} document {index}: validation failed according to {doc["schema_url"]}:\n"
+                        f"{exception.message}"
                     )
                     logging.debug(exception, stack_info=True)
                     fails_count += 1
@@ -129,11 +138,10 @@ def main():
                     )
                     fails_count += 1
             else:
-                logging.debug(
-                    f"{file}: no JSON schema defined in comments"
-                )
+                logging.debug(f"{file}: no JSON schema defined in comments")
 
     return fails_count
+
 
 if __name__ == "__main__":
     main()
